@@ -1,18 +1,22 @@
 [[/img/picture_large978-4-8144-0020-1.jpeg]]
 
-このサイトは書籍「[[https://www.oreilly.co.jp/books/9784814400201/][SQLではじめるデータ分析]]」のサポートサイトです。本書に掲載されているSQLはPostgreSQLを用いで動作を確認いただけます。ここではDockerを使用し、PostgreSQLの動作環境、及びデータの投入方法の例を紹介します。なおローカルのDocker環境は整備済みであることとします。
+このサイトは書籍『[[https://www.oreilly.co.jp/books/9784814400201/][SQLではじめるデータ分析]]』のサポートサイトです。
 
-* テストデータの取得
+本書は「[[https://www.oreilly.com/library/view/sql-for-data/9781492088776/][SQL for Data Analysis]]」の翻訳です。
 
-本書は「[[https://www.oreilly.com/library/view/sql-for-data/9781492088776/][SQL for Data Analysis]]」の翻訳であり、原著の著者がテスト用のデータとSQLをGithub上で公開しています。それらを取得することで、実際に動作をご確認いただけます。
+本書に掲載されているSQLは、PostgreSQLで動作するように書かれています。ここではDockerを使用し、PostgreSQLの動作環境の構築および、データの投入方法の例を紹介します。なおローカルのDocker環境は整備済みであることが前提です。
 
-#+caption: テストデータを取得する
+* 1. サンプルコードとデータの取得
+
+原著者は、書籍で使ったデータとSQLを[[https://github.com/cathytanimura/sql_book][GitHub]]上で公開しています。まず、それらを取得するために、git cloneします。
+
+#+caption: サンプルコードとデータを取得する
 #+begin_src bash
 git clone https://github.com/cathytanimura/sql_book.git
 #+end_src
 
 
-* PostgreSQLコンテナの起動と接続
+* 2. PostgreSQLコンテナの起動と接続
 
 dockerコマンドを使用しDocker Hubからイメージを取得します。ここではサイズの小さいalpineベースのイメージを使用することにしました。
 
@@ -36,21 +40,17 @@ docker run -d --rm \
 docker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpath
 #+end_src
 
-起動したコンテナで動作しているPostgreSQLに接続します。ここではdocker execを用いてコンテナ内にあるpsqlコマンドを利用しサーバーに接続します。
+起動したコンテナで動作しているPostgreSQLに接続します。ここではdocker execを用いてコンテナ内にあるpsqlコマンドを利用しサーバに接続します。
 
-#+caption: PostgreSQLサーバーに接続する
+#+caption: PostgreSQLサーバに接続する
 #+begin_src bash
 docker exec -it postgres psql -U postgres
 #+end_src
 
 
-* データの投入
+* 3. データの投入
 
-各フォルダは章毎に分かれています。主に =create_= で始まるファイル名が付いているものは、テーブルを作成する際のDDLが記述されいます。テストデータは、DDLと同じSQLファイルに記載されている場合と、CSV形式で保存されており、DDLのファイルにCOPYコマンドを用いて取り込むようになっている場合があります。また、各章は前の章のテーブルが定義されている事が前提になっている場合があります。つまり6章を実施する場合、それ以前の1章から5章のデータを要求される事があります。
-
-** 1章
-
-1章で使用できるデータはありません。
+各フォルダは章ごとに分かれています。主に =create_= で始まる名前のファイルは、テーブルを作成する際のDDLが記述されています。サンプルデータは、DDLと同じSQLファイルに記載されている場合と、CSV形式で保存されており、DDLのファイルにCOPYコマンドを用いて取り込むようになっている場合があります。また、各章は前の章のテーブルが定義されていることが前提になっている場合があります。つまり6章を実施する場合、それ以前の5章までに使用したデータを要求されることがあります。なお、SQLとデータ分析について概要を説明している1章と全体のまとめの9章では、SQLコードやデータは登場しないので、フォルダもありません。
 
 ** 2章
 
@@ -303,7 +303,7 @@ VALUES
 - sql_book/Chapter 4: Cohorts/create_legislators_table.sql
 - sql_book/Chapter 4: Cohorts/create_legislators_terms.sql
 
-データ投入はCOPYコマンドを用いて次のように実行できます。
+データ投入はCOPYコマンドを用いて次のように実行します。
 
 #+begin_src sql
 COPY legislators
@@ -319,7 +319,7 @@ COPY legislators_terms
 
 ** 5章
 
-以下のファイルに記載されているDDLを、SQLで実行することでテーブルを定義します。 =create_stop_words.sql= についてはファイル内のINSERT文を実行することでデータを投入できます。
+以下のファイルに記載されているDDLを、SQLで実行することでテーブルを定義します。 =create_stop_words.sql= についてはファイル内のINSERT文を実行することでデータを投入します。
 
 - sql_book/Chapter 5: Text Analysis/create_stop_words.sql
 - sql_book/Chapter 5: Text Analysis/create_ufo.sql
@@ -425,7 +425,7 @@ COPY earthquakes
 
 - sql_book/Chapter 7: Experiment Analysis/create_exp_tables.sql
 
-データ投入はCOPYコマンドを用いて次のように実行できます。
+データ投入はCOPYコマンドを用いて次のように実行します。
 
 #+begin_src sql
 COPY game_users
@@ -452,7 +452,7 @@ COPY exp_assignment
 
 - sql_book/Chapter 8: Creating Complex Data Sets/create_videogame_sales.sql
 
-データ投入はCOPYコマンドを用いて次のように実行できます。
+データ投入はCOPYコマンドを用いて次のように実行します。
 
 #+begin_src sql
 COPY videogame_sales
@@ -460,10 +460,6 @@ COPY videogame_sales
   DELIMITER ',' CSV HEADER;
 
 #+end_src
-
-** 9章
-
-9章では、新たに使用可能なデータはありません。
 
 * 正誤表
 
