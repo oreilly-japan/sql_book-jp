@@ -1,2 +1,125 @@
-{{ .Content }}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ .Site.Title }}</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+      *,::after,::before{box-sizing:border-box}html{line-sizing:normal}body{margin:0}[hidden]{display:none}h1{font-size:2rem}h2{font-size:1.5rem}h3{font-size:1.17rem}h4{font-size:1rem}h5{font-size:.83rem}h6{font-size:.67rem}h1{margin:.67em 0}pre{white-space:pre-wrap}hr{border-style:solid;border-width:1px 0 0;color:inherit;height:0;overflow:visible}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle;max-width:100%}audio:not([controls]){display:none}picture{display:contents}source{display:none}canvas,img,svg,video{height:auto}audio{width:100%}img{border-style:none}svg{overflow:hidden}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}
+    </style>
+
+    <style>
+      /* 全体の設定 */
+      * {
+	font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+      }
+
+      /* 記事単体の設定 */
+      article.main {
+	width: 90%;
+	margin: auto;
+	word-break: break-all;
+	overflow-wrap: break-word;
+      }
+
+      /* PC等画面の広いものは、幅を制限し読み易さを損わないようにする */
+      @media screen and (min-width: 920px) {
+	article.main {
+	  width: 50%;
+	}
+      }
+
+      /* コードブロックの表示を調整する */
+      pre.example {
+	font-family: "Courier New", Consolas, monospace !important; /* 等幅 */
+	white-space: pre;  /* AAで描いた図を折り返しで崩れさせない */
+	padding: 1em;
+	overflow-x: auto;
+	background-color: #f3f3f3;	
+      }
+
+      code {
+	font-family: "Courier New", Consolas, monospace !important; /* 等幅 */
+	white-space: pre;  /* AAで描いた図を折り返しで崩れさせない */
+	background-color: #f3f3f3;
+      }
+
+      .highlight pre,code {
+	color: black;
+	background-color: #f3f3f3;
+      }
+
+      /* 図表 */
+      figure {
+	margin: 0;
+      }
+
+      /* 見出し */
+      h1 {
+	font-weight: bold;
+	font-size: 3rem;
+      }
+
+      h2 {
+	font-weight: bold;
+	font-size: 2.4rem;
+      }
+
+      h3 {
+	font-weight: bold;
+	font-size: 2rem;
+      }
+
+      h4 {
+	font-weight: bold;
+	font-size: 1.8rem;
+      }
+
+      h5, h6, h7, h8, h9 {
+	font-weight: bold;
+	font-size: 1.5rem;
+      }
+
+      /* 本文 */
+      .article-content p {
+	text-indent: 1rem;
+	font-size: 1.2rem;
+	line-height: 2.25rem;
+      }
+
+      /* 表の設定 */
+      table {
+	border-collapse: collapse;
+      }
+      table td {
+	border: 1px solid #ccc;
+	background:#fff;
+	padding: 4px;
+      }
+      table th {
+	border: 1px solid #ccc;
+	background:#efefef;
+	padding: 4px;
+      }
+
+      blockquote {
+	background:#eee;
+      }
+
+      /* 脚注のスタイルを変更する(HTMLの構造はgo-orgが出力するため変更が難しい) */
+      .footnote-body {
+	display: inline-block;
+      }
+      .footnote-body > p {
+	display: inline-block;
+      }
+
+    </style>
+    
+  </head>
+  <body>
+    {{- if .Title }}<h1>{{ .Title }}</h1>{{- end }}
+    {{ .Content }}
+  </body>
+</html>
+
 
