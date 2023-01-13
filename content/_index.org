@@ -31,13 +31,55 @@ docker run -d --rm \
   --publish=127.0.0.1:5432:5432 \
   --env=POSTGRES_PASSWORD=postgres \
   --volume=postgres-15-data:/var/lib/postgresql/data \
-  --volume=./:/localpath \
   --name=postgres \
   postgres:15.0-alpine3.16
 #+end_src
 
+=docker cp= コマンドを使用し、サンプルコードとデータをコンテナ内にコピーします。
+
 #+begin_src
-docker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpath
+docker cp "sql_book/Chapter 2: Preparing Data for Analysis/create_date_dimension.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 3: Time Series Analysis/create_retail_sales_table.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 3: Time Series Analysis/us_retail_sales.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 4: Cohorts/create_legislators_table.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 4: Cohorts/create_legislators_terms.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 4: Cohorts/legislators.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 4: Cohorts/legislators_terms.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 5: Text Analysis/create_stop_words.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 5: Text Analysis/create_ufo.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 5: Text Analysis/ufo1.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 5: Text Analysis/ufo2.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 5: Text Analysis/ufo3.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 5: Text Analysis/ufo4.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 5: Text Analysis/ufo5.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/anomaly_detection_queries.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/create_earthquakes_table.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes1.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes10.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes11.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes12.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes13.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes14.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes15.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes2.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes3.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes4.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes5.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes6.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes7.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes8.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 6: Anomaly Detection/earthquakes9.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 7: Experiment Analysis/create_exp_tables.mysql.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 7: Experiment Analysis/create_exp_tables.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 7: Experiment Analysis/exp_assignment.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 7: Experiment Analysis/experiment_queries.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 7: Experiment Analysis/game_actions.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 7: Experiment Analysis/game_purchases.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 7: Experiment Analysis/game_users.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 8: Creating Complex Data Sets/complex_dataset_queries.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 8: Creating Complex Data Sets/create_videogame_sales.sql" postgres:/localpath/
+docker cp "sql_book/Chapter 8: Creating Complex Data Sets/videogame_sales.csv" postgres:/localpath/
+docker cp "sql_book/Chapter 9: Conclusion/code.sql" postgres:/localpath/
 #+end_src
 
 起動したコンテナで動作しているPostgreSQLに接続します。ここではdocker execを用いてコンテナ内にあるpsqlコマンドを利用しサーバに接続します。
@@ -360,27 +402,27 @@ COPY ufo
 COPY earthquakes
   FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes1.csv'
   DELIMITER ',' CSV HEADER;
-     
+
 COPY earthquakes
   FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes2.csv'
   DELIMITER ',' CSV HEADER;
-     
+
 COPY earthquakes
   FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes3.csv'
   DELIMITER ',' CSV HEADER;
-     
+
 COPY earthquakes
   FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes4.csv'
   DELIMITER ',' CSV HEADER;
-     
+
 COPY earthquakes
   FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes5.csv'
   DELIMITER ',' CSV HEADER;
-     
+
 COPY earthquakes
   FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes6.csv'
   DELIMITER ',' CSV HEADER;
-     
+
 COPY earthquakes
   FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes7.csv'
   DELIMITER ',' CSV HEADER;
@@ -431,11 +473,11 @@ COPY earthquakes
 COPY game_users
   FROM '/workdir/sql_book/Chapter 7: Experiment Analysis/game_users.csv'
   DELIMITER ',' CSV HEADER;
-  
+
 COPY game_actions
   FROM '/workdir/sql_book/Chapter 7: Experiment Analysis/game_actions.csv'
   DELIMITER ',' CSV HEADER;
-  
+
 COPY game_purchases
   FROM '/workdir/sql_book/Chapter 7: Experiment Analysis/game_purchases.csv'
   DELIMITER ',' CSV HEADER;
