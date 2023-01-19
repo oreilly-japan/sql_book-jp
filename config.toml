@@ -1,3 +1,4 @@
 baseURL = 'https://oreilly-japan.github.io/sql_book-jp/'
 languageCode = 'ja'
 title = 'SQLではじめるデータ分析 サポートページ'
+staticDir = ['static']

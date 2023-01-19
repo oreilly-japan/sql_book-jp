@@ -1,4 +1,4 @@
-[[/img/picture_large978-4-8144-0020-1.jpeg]]
+[[./img/picture_large978-4-8144-0020-1.jpeg]]
 
 このサイトは書籍『[[https://www.oreilly.co.jp/books/9784814400201/][SQLではじめるデータ分析]]』のサポートサイトです。
 
