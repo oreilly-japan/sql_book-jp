@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ .Site.Title }}</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+      *,::after,::before{box-sizing:border-box}html{line-sizing:normal}body{margin:0}[hidden]{display:none}h1{font-size:2rem}h2{font-size:1.5rem}h3{font-size:1.17rem}h4{font-size:1rem}h5{font-size:.83rem}h6{font-size:.67rem}h1{margin:.67em 0}pre{white-space:pre-wrap}hr{border-style:solid;border-width:1px 0 0;color:inherit;height:0;overflow:visible}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle;max-width:100%}audio:not([controls]){display:none}picture{display:contents}source{display:none}canvas,img,svg,video{height:auto}audio{width:100%}img{border-style:none}svg{overflow:hidden}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}
+    </style>
+
+    <style>
+      * {
+	font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+      }
+
+      article.main {
+	width: 90%;
+	margin: auto;
+	word-break: break-all;
+	overflow-wrap: break-word;
+      }
+
+      @media screen and (min-width: 920px) {
+	article.main {
+	  width: 50%;
+	}
+      }
+
+      pre.example {
+	font-family: "Courier New", Consolas, monospace !important;
+	white-space: pre;
+	padding: 1em;
+	overflow-x: auto;
+	background-color: #f3f3f3;
+      }
+
+      code {
+	font-family: "Courier New", Consolas, monospace !important;
+	white-space: pre;
+	overflow: scroll;
+      }
+
+      .highlight {
+	margin: 1rem;
+	padding: 1rem;
+	background-color: #272822;
+	overflow: scroll;
+
+      }
+
+      /* 図表 */
+      figure {
+	margin: 0;
+      }
+
+      figcaption {
+        position: relative;
+        top: -0.8rem;
+        margin-left: 1rem;
+      }
+
+      /* 見出し */
+      h1 {
+	font-weight: bold;
+	font-size: 3rem;
+      }
+
+      h2 {
+	font-weight: bold;
+	font-size: 2.4rem;
+      }
+
+      h3 {
+	font-weight: bold;
+	font-size: 2rem;
+      }
+
+      h4 {
+	font-weight: bold;
+	font-size: 1.8rem;
+      }
+
+      h5, h6, h7, h8, h9 {
+	font-weight: bold;
+	font-size: 1.5rem;
+      }
+
+      /* 本文 */
+      .article-content p {
+	text-indent: 1rem;
+	font-size: 1.2rem;
+	line-height: 2.25rem;
+      }
+
+      /* 表の設定 */
+      table {
+	border-collapse: collapse;
+      }
+      table td {
+	border: 1px solid #ccc;
+	background:#fff;
+	padding: 4px;
+      }
+      table th {
+	border: 1px solid #ccc;
+	background:#efefef;
+	padding: 4px;
+      }
+
+      blockquote {
+	background:#eee;
+      }
+
+      .footnote-body {
+	display: inline-block;
+      }
+      .footnote-body > p {
+	display: inline-block;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <article class="main">
+      <h1>
+	<span>SQLではじめるデータ分析</span><br />
+	<span>サポートサイト</span>
+      </h1>
+      {{ .Content }}
+    </article>
+    <hr />
+    <footer style="text-align: center;">
+      <img style="text-align: center;" src="https://www.oreilly.co.jp/assets/images/logo_oreilly_japan.svg" />
+      © 2022, O’Reilly Japan, Inc.
+    </footer>
+  </body>
+</html>

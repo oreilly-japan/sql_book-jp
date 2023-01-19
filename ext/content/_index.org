@@ -1,0 +1,373 @@
+[[/img/picture_large978-4-8144-0020-1.jpeg]]
+
+このサイトは書籍『[[https://www.oreilly.co.jp/books/9784814400201/][SQLではじめるデータ分析]]』のサポートサイトです。
+
+本書は「[[https://www.oreilly.com/library/view/sql-for-data/9781492088776/][SQL for Data Analysis]]」の翻訳です。本書に掲載されているSQLは、PostgreSQLで動作するように書かれています。ここではDockerを使用し、PostgreSQLの動作環境の構築および、データの投入方法の例を紹介します。なおローカルのDocker環境は整備済みであることが前提です。
+
+* 1. PostgreSQLコンテナの起動
+
+dockerコマンドを使用しDocker Hubからイメージを取得します。
+
+#+caption: PostgreSQLのDockerイメージを取得する
+#+begin_src bash
+docker pull postgres:15.0-alpine3.16
+#+end_src
+
+=docker run= コマンドを用いてPostgreSQLのコンテナをバックグラウンドで実行します。
+
+#+caption: PostgreSQLのDockerコンテナを起動する
+#+begin_src bash
+docker run -d --rm \
+  --publish=127.0.0.1:5432:5432 \
+  --env=POSTGRES_PASSWORD=postgres \
+  --volume=postgres-15-data:/var/lib/postgresql/data \
+  --name=postgres \
+  postgres:15.0-alpine3.16
+#+end_src
+
+PostgreSQLへ接続するには、PostgreSQL用のクライアントが必要です。先程、起動したコンテナ内にはクライアントであるpsqlも梱包されています。ここでは =docker exec= でコンテナ内に入り、コンテナ内のpsqlコマンドを使用してPostgreSQLへ接続します。
+
+#+caption: PostgreSQLサーバに接続する
+#+begin_src bash
+docker exec -it postgres psql -U postgres
+#+end_src
+
+接続するとSQLを実行できます。
+
+#+caption: SELECT 1を実行する
+#+begin_example
+psql (15.0)
+Type "help" for help.
+
+postgres=# SELECT 1;
+ ?column? 
+----------
+        1
+(1 row)
+#+end_example
+
+=exit= を入力することで、psqlを終了できます。psqlの終了と同時にコンテナからも脱出します。psqlを終了しても、コンテナはバックグラウンドで起動し続けます。
+
+#+caption: psqlを終了する
+#+begin_example
+postgres=# exit
+#+end_example
+
+また今回はコンテナはホスト側の =5432= ポートを開くように起動しました。別の接続方法として、ローカルから =127.0.0.1:5432= にアクセスしPostgreSQLに接続することもできます。
+
+
+* 2. サンプルコードとデータの取得
+
+原著者は、書籍で使ったデータとSQLを[[https://github.com/cathytanimura/sql_book][GitHub]]上で公開しています。まず、それらを取得するために、git cloneします。
+
+#+caption: サンプルコードとデータを取得する
+#+begin_src bash
+git clone https://github.com/cathytanimura/sql_book.git
+#+end_src
+
+* データの投入
+
+コンテナを起動した状態でサンプルコードとデータをコンテナ内にコピーします。まずサンプルコードとデータを格納するディレクトリ =/localpath= を作成します。
+
+#+begin_src bash
+docker exec postgres mkdir /localpath
+#+end_src
+
+=docker cp= コマンドを使用し、サンプルコードとデータをコンテナ内の =/localpath= にコピーします。
+
+#+begin_src
+docker cp "./sql_book/Chapter 2: Preparing Data for Analysis/create_date_dimension.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 3: Time Series Analysis/create_retail_sales_table.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 3: Time Series Analysis/us_retail_sales.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 4: Cohorts/create_legislators_table.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 4: Cohorts/create_legislators_terms.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 4: Cohorts/legislators.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 4: Cohorts/legislators_terms.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/create_stop_words.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/create_ufo.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo1.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo2.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo3.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo4.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo5.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/anomaly_detection_queries.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/create_earthquakes_table.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes1.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes10.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes11.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes12.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes13.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes14.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes15.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes2.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes3.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes4.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes5.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes6.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes7.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes8.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes9.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/create_exp_tables.mysql.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/create_exp_tables.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/exp_assignment.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/experiment_queries.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/game_actions.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/game_purchases.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/game_users.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 8: Creating Complex Data Sets/complex_dataset_queries.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 8: Creating Complex Data Sets/create_videogame_sales.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 8: Creating Complex Data Sets/videogame_sales.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 9: Conclusion/code.sql" postgres:/localpath/
+#+end_src
+
+起動したコンテナで動作しているPostgreSQLに接続します。ここではdocker execを使用してコンテナ内にあるpsqlコマンドを利用しサーバに接続します。
+
+#+caption: PostgreSQLサーバに接続する
+#+begin_src bash
+docker exec -it postgres psql -U postgres
+#+end_src
+
+=docker cp= でコピーしたデータをPostgreSQL内に投入します。psqlのプロンプトで、データ投入用のSQLを読み込みます。
+
+#+begin_src sql
+\i /localpath/create_date_dimension.sql
+\i /localpath/create_retail_sales_table.sql
+\i /localpath/create_legislators_table.sql
+\i /localpath/create_legislators_terms.sql
+\i /localpath/create_stop_words.sql
+\i /localpath/create_ufo.sql
+\i /localpath/create_earthquakes_table.sql
+\i /localpath/create_exp_tables.sql
+\i /localpath/create_videogame_sales.sql
+#+end_src
+
+** 2章及び3章の追加のデータ投入
+
+2章及び3章のデータは原著のリポジトリには無いため、必要に応じて手動で作成します。psqlのプロンプトで、以下のSQLを実行します。
+
+#+caption: 2章の追加データ
+#+begin_src sql
+--
+DROP TABLE IF EXISTS country_populations;
+CREATE TABLE country_populations (
+       country text NOT NULL,
+       year_1980 integer,
+       year_1990 integer,
+       year_2000 integer,
+       year_2010 integer
+);
+INSERT INTO country_populations
+  (country, year_1980, year_1990, year_2000, year_2010)
+VALUES
+  ('Canada', 24593, 27791, 31100, NULL),
+  ('Mexico', 68347, NULL, NULL, NULL),
+  ('United States', 227225, NULL, NULL, NULL)
+;
+--
+DROP TABLE IF EXISTS populations;
+CREATE TABLE populations (
+  country text,
+  population integer
+);
+INSERT INTO populations (country, population)
+VALUES
+  ('Canada', 24593),
+  ('Mexico', 68347),
+  ('United States', 227225);
+DROP TABLE IF EXISTS gdp;
+CREATE TABLE gdp (
+  country text,
+  gdp integer
+);
+INSERT INTO gdp (country, gdp)
+VALUES
+  ('Canada', 1988336),
+  ('Mexico', 1297661),
+  ('United States', 22996075);
+
+
+--
+DROP TABLE IF EXISTS customers;
+CREATE TABLE customers (
+  customer_id integer PRIMARY KEY,
+  customer_name text,
+  customer_email text,
+  gender char(1)
+);
+INSERT INTO customers (customer_id, customer_name, customer_email, gender)
+VALUES
+  (1, 'alice', 'alice@example.com', 'F'),
+  (2, 'bob'  , 'bob@example.com'  , 'M'),
+  (3, 'carol', 'carol@example.com', 'F'),
+  (4, 'david', 'david@example.com', 'F');
+
+--
+DROP TABLE IF EXISTS transactions;
+CREATE TABLE transactions (
+  transaction_id integer PRIMARY KEY,
+  customer_id integer
+);
+INSERT INTO transactions (transaction_id, customer_id)
+VALUES
+  (1, 1),
+  (2, 1),
+  (3, 2),
+  (4, 2),
+  (5, 3),
+  (6, 3),
+  (7, 3);
+
+
+--
+DROP TABLE IF EXISTS orders;
+CREATE TABLE orders (
+  order_id integer PRIMARY KEY,
+  customer_id integer,
+  order_amount decimal,
+  sales integer,
+  transaction_date date,
+  order_date date,
+  item_id integer,
+  product text
+);
+INSERT INTO orders (
+  order_id,
+  customer_id,
+  order_amount,
+  sales,
+  transaction_date,
+  order_date,
+  item_id,
+  product
+) VALUES
+  (1, 123,   59.99,    1000, '2023-05-01', '2023-05-01', 1, 'shirt'),
+  (2, 234,   120.55,   1000, '2023-05-02', '2023-05-02', 2, 'shirt'),
+  (3, 345,   87.99,    1000, '2023-05-03', '2023-05-03', 1, 'shirt'),
+  (90, 999,  5208.57,  1000, '2023-05-01', '2023-05-01', 1, 'shirt'),
+  (91, 999,  1211.65,  1000, '2023-05-01', '2023-05-01', 1, 'shoes'),
+  (92, 999,  562.250,  1000, '2023-05-01', '2023-05-01', 1, 'hat'),
+  (93, 999,  5413.29,  1000, '2023-05-02', '2023-05-02', 1, 'shirt'),
+  (94, 999,  522.25,   1000, '2023-05-02', '2023-05-02', 1, 'shoes'),
+  (95, 999,  325.62,   1000, '2023-05-02', '2023-05-02', 1, 'hat'),
+  (96, 999,  5898.86,  1000, '2023-05-03', '2023-05-03', 1, 'shirt'),
+  (97, 999,  1088.62,  1000, '2023-05-03', '2023-05-03', 1, 'shoes'),
+  (98, 999,  858.35,   1000, '2023-05-03', '2023-05-03', 1, 'hat');
+
+--
+DROP TABLE IF EXISTS nps_responses;
+CREATE TABLE nps_responses (
+  response_id integer PRIMARY KEY,
+  customer_id integer,
+  likelihood integer,
+  country text,
+  high_value boolean
+);
+INSERT INTO nps_responses (response_id, customer_id, likelihood, country, high_value)
+VALUES
+  (1, 1, 4 , 'JP', FALSE),
+  (2, 1, 5 , 'JP', FALSE),
+  (3, 1, 6 , 'CA', FALSE),
+  (4, 1, 7 , 'CA', FALSE),
+  (5, 2, 8 , 'US', TRUE),
+  (6, 2, 9 , 'CA', TRUE),
+  (7, 3, 10, 'US', TRUE),
+  (8, 3, 0 , 'US', TRUE);
+
+--
+DROP TABLE IF EXISTS fruit_orders;
+DROP TYPE IF EXISTS fruit_t;
+CREATE TYPE fruit_t AS ENUM ('orange', 'apple');
+CREATE TABLE fruit_orders (
+       customer_id integer,
+       fruit fruit_t,
+       quantity integer
+);
+INSERT INTO fruit_orders (customer_id, fruit, quantity)
+VALUES
+  (1, 'orange', 2),
+  (2, 'apple' , 7),
+  (3, 'orange', 5),
+  (3, 'apple' , 6);
+
+
+--
+DROP TABLE IF EXISTS customer_subscriptions;
+CREATE TABLE customer_subscriptions (
+  customer_id integer,
+  subscription_date date,
+  annual_amount integer
+);
+INSERT INTO customer_subscriptions
+  (customer_id, subscription_date, annual_amount)
+VALUES
+  (1, '2020-01-01', 1000000),
+  (1, '2020-02-01', 1000000),
+  (1, '2020-03-01', 1000000),
+  (1, '2020-04-01', 1000000);
+
+#+end_src
+
+#+caption: 3章の追加データ
+#+begin_src sql
+DROP TABLE IF EXISTS retail_sales;
+CREATE TABLE retail_sales (
+       sales_month date,
+       sales integer,
+       kind_of_business text
+);
+INSERT INTO retail_sales (sales_month, sales, kind_of_business)
+VALUES
+  ('1992-01-01', 146376, 'Retail and food services sales, total'),
+  ('1992-02-01', 147079, 'Retail and food services sales, total'),
+  ('1992-03-01', 159336, 'Retail and food services sales, total'),
+  ('1993-01-01', 2153095, 'Retail and food services sales, total'),
+  ('1994-01-01', 2330235, 'Retail and food services sales, total'),
+  ('1992-01-01', 8327, 'Book stores'),
+  ('1992-01-01', 11251, 'Hobby, toy, and game stores'),
+  ('1992-01-01', 15583, 'Sporting goods stores'),
+  ('1992-01-01', 701, 'Men''s clothing stores'),
+  ('1992-01-01', 1873, 'Women''s clothing stores'),
+  ('1992-02-01', 1991, 'Women''s clothing stores'),
+  ('1993-01-01', 9962, 'Men''s clothing stores'),
+  ('1993-01-01', 217, 'Men''s clothing stores'),
+  ('1993-01-01', 32350, 'Women''s clothing stores'),
+  ('1993-01-01', 32350, 'Women''s clothing stores'),
+  ('1994-01-01', 30585, 'Women''s clothing stores'),
+  ('1994-01-01', 10032, 'Men''s clothing stores'),
+  ('2019-01-01', 2511, 'Women''s clothing stores'),
+  ('2019-02-01', 2680, 'Women''s clothing stores'),
+  ('2019-03-01', 3585, 'Women''s clothing stores'),
+  ('2019-04-01', 3604, 'Women''s clothing stores'),
+  ('2019-05-01', 3807, 'Women''s clothing stores'),
+  ('2019-06-01', 3272, 'Women''s clothing stores'),
+  ('2019-07-01', 3261, 'Women''s clothing stores'),
+  ('2019-08-01', 3325, 'Women''s clothing stores'),
+  ('2019-09-01', 3080, 'Women''s clothing stores'),
+  ('2019-10-01', 3390, 'Women''s clothing stores'),
+  ('2019-11-01', 3850, 'Women''s clothing stores'),
+  ('2019-12-01', 4496, 'Women''s clothing stores');
+
+
+DROP TABLE IF EXISTS date_dim;
+CREATE TABLE date_dim (
+       date date,
+       first_day_of_month date
+);
+INSERT INTO date_dim (date, first_day_of_month)
+VALUES
+  ('1993-01-01', '1993-01-01'),
+  ('1993-02-01', '1993-02-01'),
+  ('1993-03-01', '1993-03-01');
+#+end_src
+
+
+* 3. 正誤表
+
+現在までのところ、正誤表に掲載する項目はありません。誤植や間違いなどを見つけた場合、[[mailto:japan@oreilly.co.jp][japan@oreilly.co.jp]]までお知らせください。
+
+
+* 4. 注意事項
+
+本書のコードは、このページで説明しているAlpineベースのPostgreSQLのDocker Imageを使用し、すべて動作していることを確認しておりますが、環境やバージョンの違いなどにより、希望通りに動作されない場合の原因解明などや個人レッスンに相当するご要望にはご対応できかねますので、ご了承いただければ幸いです。
+
+
