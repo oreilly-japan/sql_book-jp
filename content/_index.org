@@ -145,7 +145,7 @@ docker exec -it postgres psql -U postgres
 
 2章及び3章のデータは原著のリポジトリには無いため、必要に応じて手動で作成します。psqlのプロンプトで、以下のSQLを実行します。
 
-#+caption: 2章
+#+caption: 2章の追加データ
 #+begin_src sql
 --
 DROP TABLE IF EXISTS country_populations;
@@ -307,7 +307,7 @@ VALUES
 
 #+end_src
 
-#+caption: 3章
+#+caption: 3章の追加データ
 #+begin_src sql
 DROP TABLE IF EXISTS retail_sales;
 CREATE TABLE retail_sales (
