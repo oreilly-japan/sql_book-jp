@@ -35,7 +35,7 @@ docker exec -it postgres psql -U postgres
 接続するとSQLを実行できます。
 
 #+caption: SELECT 1を実行する
-#+begin_example
+#+begin_src sql
 psql (15.0)
 Type "help" for help.
 
@@ -44,14 +44,14 @@ postgres=# SELECT 1;
 ----------
         1
 (1 row)
-#+end_example
+#+end_src
 
 =exit= を入力することで、psqlを終了できます。psqlの終了と同時にコンテナからも脱出します。psqlを終了しても、コンテナはバックグラウンドで起動し続けます。
 
 #+caption: psqlを終了する
-#+begin_example
+#+begin_src
 postgres=# exit
-#+end_example
+#+end_src
 
 また今回はコンテナはホスト側の =5432= ポートを開くように起動しました。別の接続方法として、ローカルから =127.0.0.1:5432= にアクセスしPostgreSQLに接続することもできます。
 
