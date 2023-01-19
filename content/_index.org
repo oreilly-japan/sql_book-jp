@@ -2,11 +2,61 @@
 
 このサイトは書籍『[[https://www.oreilly.co.jp/books/9784814400201/][SQLではじめるデータ分析]]』のサポートサイトです。
 
-本書は「[[https://www.oreilly.com/library/view/sql-for-data/9781492088776/][SQL for Data Analysis]]」の翻訳です。
+本書は「[[https://www.oreilly.com/library/view/sql-for-data/9781492088776/][SQL for Data Analysis]]」の翻訳です。本書に掲載されているSQLは、PostgreSQLで動作するように書かれています。ここではDockerを使用し、PostgreSQLの動作環境の構築および、データの投入方法の例を紹介します。なおローカルのDocker環境は整備済みであることが前提です。
 
-本書に掲載されているSQLは、PostgreSQLで動作するように書かれています。ここではDockerを使用し、PostgreSQLの動作環境の構築および、データの投入方法の例を紹介します。なおローカルのDocker環境は整備済みであることが前提です。
+* 1. PostgreSQLコンテナの起動
 
-* 1. サンプルコードとデータの取得
+dockerコマンドを使用しDocker Hubからイメージを取得します。
+
+#+caption: PostgreSQLのDockerイメージを取得する
+#+begin_src bash
+docker pull postgres:15.0-alpine3.16
+#+end_src
+
+=docker run= コマンドを用いてPostgreSQLのコンテナをバックグラウンドで実行します。
+
+#+caption: PostgreSQLのDockerコンテナを起動する
+#+begin_src bash
+docker run -d --rm \
+  --publish=127.0.0.1:5432:5432 \
+  --env=POSTGRES_PASSWORD=postgres \
+  --volume=postgres-15-data:/var/lib/postgresql/data \
+  --name=postgres \
+  postgres:15.0-alpine3.16
+#+end_src
+
+PostgreSQLへ接続するには、PostgreSQL用のクライアントが必要です。先程、起動したコンテナ内にはクライアントであるpsqlも梱包されています。ここでは =docker exec= でコンテナ内に入り、コンテナ内のpsqlコマンドを使用してPostgreSQLへ接続します。
+
+#+caption: PostgreSQLサーバに接続する
+#+begin_src bash
+docker exec -it postgres psql -U postgres
+#+end_src
+
+接続するとSQLを実行できます。
+
+#+caption: SELECT 1を実行する
+#+begin_example
+psql (15.0)
+Type "help" for help.
+
+postgres=# SELECT 1;
+ ?column? 
+----------
+        1
+(1 row)
+#+end_example
+
+=exit= を入力することで、psqlを終了できます。psqlの終了と同時にコンテナからも脱出します。psqlを終了しても、コンテナはバックグラウンドで起動し続けます。
+
+#+caption: psqlを終了する
+#+begin_example
+postgres=# exit
+#+end_example
+
+また今回はコンテナはホスト側の =5432= ポートを開くように起動しました。別の接続方法として、ローカルから =127.0.0.1:5432= にアクセスしPostgreSQLに接続することもできます。
+
+
+* 2. サンプルコードとデータの取得
 
 原著者は、書籍で使ったデータとSQLを[[https://github.com/cathytanimura/sql_book][GitHub]]上で公開しています。まず、それらを取得するために、git cloneします。
 
@@ -15,45 +65,87 @@
 git clone https://github.com/cathytanimura/sql_book.git
 #+end_src
 
+* データの投入
 
-* 2. PostgreSQLコンテナの起動と接続
+コンテナを起動した状態でサンプルコードとデータをコンテナ内にコピーします。まずサンプルコードとデータを格納するディレクトリ =/localpath= を作成します。
 
-dockerコマンドを使用しDocker Hubからイメージを取得します。ここではサイズの小さいalpineベースのイメージを使用することにしました。
-
-#+caption: PostgreSQLのDockerイメージを取得する
 #+begin_src bash
-docker pull postgres:15.0-alpine3.16
+docker exec postgres mkdir /localpath
 #+end_src
 
-#+caption: PostgreSQLのDockerコンテナを起動する
-#+begin_src bash
-docker run -d --rm \
-  --publish=127.0.0.1:5432:5432 \
-  --env=POSTGRES_PASSWORD=postgres \
-  --volume=postgres-15-data:/var/lib/postgresql/data \
-  --volume=./:/localpath \
-  --name=postgres \
-  postgres:15.0-alpine3.16
-#+end_src
+=docker cp= コマンドを使用し、サンプルコードとデータをコンテナ内の =/localpath= にコピーします。
 
 #+begin_src
-docker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpdocker cp  postgres sql_book/Chapter 4: Cohorts/legislators_terms.csv /localpath
+docker cp "./sql_book/Chapter 2: Preparing Data for Analysis/create_date_dimension.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 3: Time Series Analysis/create_retail_sales_table.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 3: Time Series Analysis/us_retail_sales.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 4: Cohorts/create_legislators_table.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 4: Cohorts/create_legislators_terms.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 4: Cohorts/legislators.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 4: Cohorts/legislators_terms.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/create_stop_words.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/create_ufo.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo1.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo2.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo3.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo4.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 5: Text Analysis/ufo5.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/anomaly_detection_queries.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/create_earthquakes_table.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes1.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes10.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes11.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes12.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes13.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes14.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes15.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes2.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes3.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes4.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes5.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes6.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes7.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes8.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 6: Anomaly Detection/earthquakes9.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/create_exp_tables.mysql.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/create_exp_tables.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/exp_assignment.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/experiment_queries.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/game_actions.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/game_purchases.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 7: Experiment Analysis/game_users.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 8: Creating Complex Data Sets/complex_dataset_queries.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 8: Creating Complex Data Sets/create_videogame_sales.sql" postgres:/localpath/
+docker cp "./sql_book/Chapter 8: Creating Complex Data Sets/videogame_sales.csv" postgres:/localpath/
+docker cp "./sql_book/Chapter 9: Conclusion/code.sql" postgres:/localpath/
 #+end_src
 
-起動したコンテナで動作しているPostgreSQLに接続します。ここではdocker execを用いてコンテナ内にあるpsqlコマンドを利用しサーバに接続します。
+起動したコンテナで動作しているPostgreSQLに接続します。ここではdocker execを使用してコンテナ内にあるpsqlコマンドを利用しサーバに接続します。
 
 #+caption: PostgreSQLサーバに接続する
 #+begin_src bash
 docker exec -it postgres psql -U postgres
 #+end_src
 
+=docker cp= でコピーしたデータをPostgreSQL内に投入します。psqlのプロンプトで、データ投入用のSQLを読み込みます。
 
-* 3. データの投入
+#+begin_src sql
+\i /localpath/create_date_dimension.sql
+\i /localpath/create_retail_sales_table.sql
+\i /localpath/create_legislators_table.sql
+\i /localpath/create_legislators_terms.sql
+\i /localpath/create_stop_words.sql
+\i /localpath/create_ufo.sql
+\i /localpath/create_earthquakes_table.sql
+\i /localpath/create_exp_tables.sql
+\i /localpath/create_videogame_sales.sql
+#+end_src
 
-各フォルダは章ごとに分かれています。主に =create_= で始まる名前のファイルは、テーブルを作成する際のDDLが記述されています。サンプルデータは、DDLと同じSQLファイルに記載されている場合と、CSV形式で保存されており、DDLのファイルにCOPYコマンドを用いて取り込むようになっている場合があります。また、各章は前の章のテーブルが定義されていることが前提になっている場合があります。つまり6章を実施する場合、それ以前の5章までに使用したデータを要求されることがあります。なお、SQLとデータ分析について概要を説明している1章と全体のまとめの9章では、SQLコードやデータは登場しないので、フォルダもありません。
+** 2章及び3章の追加のデータ投入
 
-** 2章
+2章及び3章のデータは原著のリポジトリには無いため、必要に応じて手動で作成します。psqlのプロンプトで、以下のSQLを実行します。
 
+#+caption: 2章
 #+begin_src sql
 --
 DROP TABLE IF EXISTS country_populations;
@@ -213,37 +305,9 @@ VALUES
   (1, '2020-03-01', 1000000),
   (1, '2020-04-01', 1000000);
 
--- sql_bookからコピー
-DROP TABLE IF EXISTS date_dim;
-CREATE TABLE date_dim
-as  SELECT date::date
-    ,to_char(date,'yyyymmdd')::int as date_key
-    ,date_part('day',date)::int as day_of_month
-    ,date_part('doy',date)::int as day_of_year
-    ,date_part('dow',date)::int as day_of_week
-    ,trim(to_char(date, 'Day')) as day_name
-    ,trim(to_char(date, 'Dy')) as day_short_name
-    ,date_part('week',date)::int as week_number
-    ,to_char(date,'W')::int as week_of_month
-    ,date_trunc('week',date)::date as week
-    ,date_part('month',date)::int as month_number
-    ,trim(to_char(date, 'Month')) as month_name
-    ,trim(to_char(date, 'Mon')) as month_short_name
-    ,date_trunc('month',date)::date as first_day_of_month
-    ,(date_trunc('month',date) + interval '1 month' - interval '1 day')::date as last_day_of_month
-    ,date_part('quarter',date)::int as quarter_number
-    ,trim('Q' || date_part('quarter',date)::int) as quarter_name
-    ,date_trunc('quarter',date)::date as first_day_of_quarter
-    ,(date_trunc('quarter',date) + interval '3 months' - interval '1 day')::date as last_day_of_quarter
-    ,date_part('year',date)::int as year
-    ,date_part('decade',date)::int * 10 as decade
-    ,date_part('century',date)::int as centurys
-    FROM generate_series('1770-01-01'::date, '2030-12-31'::date, '1 day') as date
-    ;
 #+end_src
 
-** 3章
-
+#+caption: 3章
 #+begin_src sql
 DROP TABLE IF EXISTS retail_sales;
 CREATE TABLE retail_sales (
@@ -296,171 +360,7 @@ VALUES
   ('1993-03-01', '1993-03-01');
 #+end_src
 
-** 4章
 
-以下のファイルに記載されているDDLを、SQLで実行することでテーブルを定義します。
-
-- sql_book/Chapter 4: Cohorts/create_legislators_table.sql
-- sql_book/Chapter 4: Cohorts/create_legislators_terms.sql
-
-データ投入はCOPYコマンドを用いて次のように実行します。
-
-#+begin_src sql
-COPY legislators
-  FROM '/workdir/sql_book/Chapter 4: Cohorts/legislators.csv'
-  DELIMITER ','
-  CSV HEADER;
-
-COPY legislators_terms
-  FROM '/workdir/sql_book/Chapter 4: Cohorts/legislators_terms.csv'
-  DELIMITER ','
-  CSV HEADER;
-#+end_src
-
-** 5章
-
-以下のファイルに記載されているDDLを、SQLで実行することでテーブルを定義します。 =create_stop_words.sql= についてはファイル内のINSERT文を実行することでデータを投入します。
-
-- sql_book/Chapter 5: Text Analysis/create_stop_words.sql
-- sql_book/Chapter 5: Text Analysis/create_ufo.sql
-
-UFOのデータはCOPYコマンドを用いて次のように投入します。
-
-#+begin_src sql
-COPY ufo
-  FROM '/workdir/sql_book/Chapter 5: Text Analysis/ufo1.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY ufo
-  FROM '/workdir/sql_book/Chapter 5: Text Analysis/ufo2.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY ufo
-  FROM '/workdir/sql_book/Chapter 5: Text Analysis/ufo3.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY ufo
-  FROM '/workdir/sql_book/Chapter 5: Text Analysis/ufo4.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY ufo
-  FROM '/workdir/sql_book/Chapter 5: Text Analysis/ufo5.csv'
-  DELIMITER ',' CSV HEADER;
-#+end_src
-
-** 6章
-
-以下のファイルに記載されているDDLを、SQLで実行することでテーブルを定義します。
-
-- sql_book/Chapter 6: Anomaly Detection/create_earthquakes_table.sql
-
-データ投入はCOPYコマンドを用いて次のように実行できます。
-
-#+begin_src sql
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes1.csv'
-  DELIMITER ',' CSV HEADER;
-     
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes2.csv'
-  DELIMITER ',' CSV HEADER;
-     
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes3.csv'
-  DELIMITER ',' CSV HEADER;
-     
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes4.csv'
-  DELIMITER ',' CSV HEADER;
-     
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes5.csv'
-  DELIMITER ',' CSV HEADER;
-     
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes6.csv'
-  DELIMITER ',' CSV HEADER;
-     
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes7.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes8.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes9.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes10.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes11.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes12.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes13.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes14.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY earthquakes
-  FROM '/workdir/sql_book/Chapter 6: Anomaly Detection/earthquakes15.csv'
-  DELIMITER ',' CSV HEADER;
-
-#+end_src
-
-** 7章
-
-以下のファイルに記載されているDDLを、SQLで実行することでテーブルを定義します。
-
-- sql_book/Chapter 7: Experiment Analysis/create_exp_tables.sql
-
-データ投入はCOPYコマンドを用いて次のように実行します。
-
-#+begin_src sql
-COPY game_users
-  FROM '/workdir/sql_book/Chapter 7: Experiment Analysis/game_users.csv'
-  DELIMITER ',' CSV HEADER;
-  
-COPY game_actions
-  FROM '/workdir/sql_book/Chapter 7: Experiment Analysis/game_actions.csv'
-  DELIMITER ',' CSV HEADER;
-  
-COPY game_purchases
-  FROM '/workdir/sql_book/Chapter 7: Experiment Analysis/game_purchases.csv'
-  DELIMITER ',' CSV HEADER;
-
-COPY exp_assignment
-  FROM '/workdir/sql_book/Chapter 7: Experiment Analysis/exp_assignment.csv'
-  DELIMITER ',' CSV HEADER;
-
-#+end_src
-
-** 8章
-
-以下のファイルに記載されているDDLを、SQLで実行することでテーブルを定義します。
-
-- sql_book/Chapter 8: Creating Complex Data Sets/create_videogame_sales.sql
-
-データ投入はCOPYコマンドを用いて次のように実行します。
-
-#+begin_src sql
-COPY videogame_sales
-  FROM '/workdir/sql_book/Chapter 8: Creating Complex Data Sets/videogame_sales.csv'
-  DELIMITER ',' CSV HEADER;
-
-#+end_src
-
-* 正誤表
+* 3. 正誤表
 
 正誤表は準備中です。誤植や間違いなどを見つけた場合、[[mailto:japan@oreilly.co.jp][japan@oreilly.co.jp]]までお知らせください。
